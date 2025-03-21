@@ -1,7 +1,7 @@
 /*
  * Sameer Khichi
  * MacID: khichis student#: 400518172
- * 2AA4 - Assignment 1 - Maze Runner 
+ * 2AA4 - Assignment 3 - Maze Runner 
  */
 
 package ca.mcmaster.se2aa4.mazerunner;
@@ -15,53 +15,43 @@ import org.apache.logging.log4j.Logger;
 class that analyzes mazes given a path either from user or an algorithm.
 ability to expand or compress paths for simplification or computation
 */
-public class Analyzer {
 
+public class Analyzer{
     private final Logger analyzerLogger = LogManager.getLogger();
 
-    //this was made static so it could be changed after the object was created
+    //This was made static so it could be changed after the object was created
     private static String computedPath;
 
-    //setter to update the computed path attribute
-    /*
-     * now since im setting the attributes value in another class
-     * and trying to retrieve it in another one, I have to make the attribute static.
-     * This is so the setter actually updates the attribute, and the getter isnt just null.
-     * I would rather not make static references but I cant find another way to make this work.
-     * Note: non static was causing the final path to be printed as "null"
-     */
+    //Setter to update the computed path attribute
     public void setComputedPath(String computedPath){
         Analyzer.computedPath = computedPath;
     }
 
-    //getter for the path computed by the computer
+    //Getter for the path computed by the computer
     public String getComputedPath(){
         return computedPath;
     }
 
-    //method that converts paths to factorized form for output
+    //Method that converts paths to factorized form for output
     public String compressPath(String path){
-
         StringBuilder factorizedPath = new StringBuilder();
-        //I could use regular expression but using a loop and doing it manually is more flexible
         
         int pathLength = path.length();
         int iterations = 0;
 
-        //iterate through the path
-        while(iterations < pathLength){
-
+        //Iterate through the path
+        while (iterations < pathLength){
             char currentCharacter = path.charAt(iterations);
             int counter = 1;
 
-            //if the next character is the same as the current then count how many
-            while(((iterations + 1) < pathLength) && (path.charAt(iterations + 1) == currentCharacter)){
+            //If the next character is the same as the current then count how many
+            while (((iterations + 1) < pathLength) && (path.charAt(iterations + 1) == currentCharacter)){
                 counter++;
                 iterations++;
             }
 
-            //append how many if not one and what character
-            if(counter > 1){
+            //Append how many if not one and what character
+            if (counter > 1){
                 factorizedPath.append(counter);
             }
             factorizedPath.append(currentCharacter);
@@ -71,112 +61,123 @@ public class Analyzer {
         return factorizedPath.toString();
     }
 
-    //this function uses regular expression matches to convert the factorized path to a cononical one for validation
+    // This function uses regular expression matches to convert the factorized path to a canonical one for validation
     public String expandPath(String path){
-
         StringBuilder fullPath = new StringBuilder();
-        //I couldve used a loop to manually do this but regular expression were easier in this case
-        //regex pattern \\d+ : one or more digit, then matches exactly one letter F,L or R
-        //the brackets () are matching groups which is what the while loop uses matcher.group(1 or 2)
+        
+        //Process factorized paths like "2R3F" -> "RRFFF"
         Pattern pattern = Pattern.compile("(\\d+)([FLR])");
         Matcher matcher = pattern.matcher(path);
 
         int lastIndex = 0;
-
-        //matcher.find will get the next match in the string for the path
-        while(matcher.find()){
-
-            //this handles any non factorized path by adding any text before this matches to the string
+        
+        //Process each match
+        while (matcher.find()){
+            //This handles any non factorized path by adding any text before this matches to the string
             fullPath.append(path.substring(lastIndex, matcher.start()));
 
-            //extracting the number from the regex match the matcher gets
+            //Extracting the number from the regex match
             int factorizedAmount = Integer.parseInt(matcher.group(1));
-            //getting the direction from the regex match
+            //Getting the direction from the regex match
             char factorizedDirection = matcher.group(2).charAt(0);
 
-            //adding the right direction the same number of times as the value of the number before it
+            //Adding the right direction the same number of times as the value of the number before it
             fullPath.append(String.valueOf(factorizedDirection).repeat(factorizedAmount));
 
             lastIndex = matcher.end();
-
         }
 
+        //Add any remaining characters
         fullPath.append(path.substring(lastIndex));
-        analyzerLogger.debug(fullPath.toString());
+        analyzerLogger.debug("Expanded path: " + fullPath.toString());
         return fullPath.toString();
     }
 
-
-    //function to validate paths given to the program
+    // Function to validate paths given to the program
     public boolean validatePath(char[][] maze, int[] entry, int[] exit, String path){
-        
         analyzerLogger.debug("Path before validation: " + path);
+        analyzerLogger.debug("Entry point: [" + entry[0] + "," + entry[1] + "]");
+        analyzerLogger.debug("Exit point: [" + exit[0] + "," + exit[1] + "]");
 
-        //retrieving starting position from entry array
+        // Retrieving starting position from entry array
         int row = entry[0];
         int col = entry[1];
 
-        //this is assuming you start on the east and end on the west
-        //0, 1, 2, 3 = north, east, south, west
+        // Direction: 0=north, 1=east, 2=south, 3=west
+        // Assuming starting direction is east
         int directionFacing = 1;
         
-        //moves to 'walk' across the maze {north, east, south, west}
-        int[][] moves = {{-1,0},{0,1},{1,0},{0,-1}};
+        // Moves to 'walk' across the maze {north, east, south, west}
+        int[][] moves = {{-1, 0}, {0, 1}, {1, 0}, {0, -1}};
 
         int movementCount = 0;
-        while(movementCount < path.length()){
+        while (movementCount < path.length()){
             char move = path.charAt(movementCount);
+            
+            analyzerLogger.debug("Processing move: " + move + " at position [" + row + "," + col + "] facing direction " + directionFacing);
 
-            //turn right
-            if(move == 'R'){
+            //Turn right
+            if (move == 'R'){
                 directionFacing = ((directionFacing + 1) % 4);
+                analyzerLogger.debug("Turned right, now facing direction " + directionFacing);
             }
-            //turn left
-            else if(move == 'L'){ //these NEED to be else if, otherwise it breaks everything, took me 2 hours of yelling to figure that out
+            //Turn left
+            else if (move == 'L'){
                 directionFacing = ((directionFacing + 3) % 4);
+                analyzerLogger.debug("Turned left, now facing direction " + directionFacing);
             }
-            //ignore spaces
-            else if(move == ' '){
+            //Ignore spaces
+            else if (move == ' '){
+                //Skip this iteration
+                movementCount++;
                 continue;
             }
-            //move forward
-            else if(move == 'F'){
+            //Move forward
+            else if (move == 'F'){
                 int nextRow = row + moves[directionFacing][0];
                 int nextCol = col + moves[directionFacing][1];
+                
+                analyzerLogger.debug("Attempting to move to [" + nextRow + "," + nextCol + "]");
 
-                //checking if any move sends the player out of the maze
-                if(nextCol < 0 || nextCol >= maze[0].length || nextRow < 0 || nextRow >= maze.length){
-                    //ensuring the maze is solved by comparing current position with exit position
-                    if((nextRow == exit[0]) && (nextCol == exit[1])){
-                        analyzerLogger.info("Valid path given");
-                        return true;
-                    }
-                    analyzerLogger.info("Out of Bounds!");
+                //Check if the next position is the exit
+                if (nextRow == exit[0] && nextCol == exit[1]){
+                    analyzerLogger.info("Reached exit successfully!");
+                    return true;
+                }
+
+                //Check if we're trying to move outside the maze
+                if (nextRow < 0 || nextRow >= maze.length || nextCol < 0 || nextCol >= maze[0].length){
+                    //If we're at a boundary but not at the exit, the path is invalid
+                    analyzerLogger.info("Path led out of bounds at position [" + row + "," + col + "]");
                     return false;
                 }
 
-                //checking to see if the player hits a wall
-                if(maze[nextRow][nextCol] == '#'){
-                    analyzerLogger.info("You hit a wall!");
-                    analyzerLogger.debug(nextRow);
-                    analyzerLogger.debug(nextCol);
+                //Check if we hit a wall
+                if (maze[nextRow][nextCol] == '#'){
+                    analyzerLogger.info("Hit a wall at [" + nextRow + "," + nextCol + "]");
                     return false;
                 }
 
-                //updating the rows and columns with ones after moving
-                col = nextCol;
+                //Update position
                 row = nextRow;
+                col = nextCol;
+                analyzerLogger.debug("Moved to [" + row + "," + col + "]");
             }
-            else{
-                analyzerLogger.debug("Illegal move", move);
+            else {
+                analyzerLogger.debug("Illegal move: " + move);
                 throw new IllegalArgumentException("Invalid move: " + move);
             }
             movementCount++;
         }
         
-        //if the entered path is not illegal but does not solve the maze
-        analyzerLogger.info("Invalid path given - Still inside maze");
+        //Check if we've reached the exit after processing all moves
+        if (row == exit[0] && col == exit[1]){
+            analyzerLogger.info("Valid path - reached exit");
+            return true;
+        }
+        
+        //If we've gone through all moves but haven't reached the exit
+        analyzerLogger.info("Invalid path - didn't reach exit, ended at [" + row + "," + col + "]");
         return false;
-    
     }
 }
