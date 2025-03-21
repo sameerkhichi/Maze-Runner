@@ -9,7 +9,7 @@
 
   <groupId>io.github.ace-lectures.2aa4</groupId>
   <!-- Replace this with your MacId. E.g., mine would be a1-mossers -->
-  <artifactId>a1-khichis</artifactId>
+  <artifactId>a3-khichis</artifactId>
   <version>1.0</version>
   <name>McMaster :: SFWRENG :: 2AA4 :: Maze Runner</name>
 
@@ -35,6 +35,12 @@
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
+    </dependency>
+    <dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter</artifactId>
+    <version>5.8.2</version>
+    <scope>test</scope>
     </dependency>
   </dependencies>
 
