@@ -14,7 +14,27 @@ public class RightHandTest {
         rightHand = new RightHand();
     }
 
+
     @Test
+    void testComputerPath(){
+        char[][] maze = {
+            {'#','#','#','#','#'},
+            {'#',' ',' ',' ','#'},
+            {' ',' ','#',' ','#'},
+            {'#','#','#',' ',' '},
+            {'#','#','#','#','#'}
+        };
+
+        int[] entry = {3,0};
+        int[] exit = {3,5};
+
+        rightHand.computePath(maze, entry, exit);
+        assertEquals("LFRFLFR2FR2FL2F", rightHand.getComputedPath(), "Should keep right hand on a wall and move forward till it finds an exit");
+
+
+    }
+
+    @Test 
     void testStraightMaze(){
         char[][] maze = {
             {'#', '#', '#', '#'},
