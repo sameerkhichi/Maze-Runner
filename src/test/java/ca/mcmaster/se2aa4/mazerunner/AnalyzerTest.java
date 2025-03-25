@@ -1,6 +1,7 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,7 +28,41 @@ public class AnalyzerTest {
         assertEquals("4FR2F2L6FR3F2L2F2RF", analyzer.compressPath("FFFFRFFLLFFFFFFRFFFLLFFRRF"));
     }
 
+    @Test
+    public void testPathExpansion(){
+
+        assertEquals("FFFFFRRFFFLLLFFRFF", analyzer.expandPath("5F2R3F3L2FR2F"));
+
+        assertEquals("FRFL", analyzer.expandPath("FRFL"));
+
+        assertEquals("FFFRR", analyzer.expandPath("3F2R"));
+
+        assertEquals("FFF", analyzer.expandPath("3F"));
+
+        assertEquals("RR", analyzer.expandPath("2R"));
+
+        assertEquals("LL", analyzer.expandPath("2L"));
+    }
 
 
-
+    @Test
+    public void testValidPathValidation() {
+        //sample maze
+        char[][] testMaze = {
+            {'#', '#', '#', '#', '#'},
+            {' ', ' ', ' ', ' ', '#'},
+            {'#', '#', '#', ' ', '#'},
+            {'#', ' ', ' ', ' ', '#'},
+            {'#', ' ', '#', '#', '#'},
+            {'#', ' ', ' ', ' ', ' '},
+            {'#', '#', '#', '#', '#'}
+        };
+        
+        int[] entry = {1, 0}; //Starting at (1,0)
+        int[] exit = {5, 4}; //Exit at (3,4)
+        
+        //Testing a valid path to see if it validates it correctly
+        String validPath = "FFFRFFRFFLFFLFFF";
+        assertTrue(analyzer.validatePath(testMaze, entry, exit, validPath));
+    }
 }
