@@ -1,6 +1,7 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -65,4 +66,25 @@ public class AnalyzerTest {
         String validPath = "FFFRFFRFFLFFLFFF";
         assertTrue(analyzer.validatePath(testMaze, entry, exit, validPath));
     }
-}
+
+    @Test
+    public void testInvalidPathValidation() {
+        //sample maze
+        char[][] testMaze = {
+            {'#', '#', '#', '#', '#'},
+            {' ', ' ', ' ', '#', '#'},
+            {'#', '#', ' ', '#', '#'},
+            {'#', ' ', ' ', '#', '#'},
+            {'#', ' ', '#', '#', '#'},
+            {'#', ' ', ' ', ' ', ' '},
+            {'#', '#', '#', '#', '#'}
+        };
+        
+        int[] entry = {1, 0}; //Starting at (1,0)
+        int[] exit = {5, 4}; //Exit at (3,4)
+        
+        //Testing a valid path to see if it validates it correctly
+        String invalidPath = "FFRFFRFLFFRF";
+        assertFalse(analyzer.validatePath(testMaze, entry, exit, invalidPath));
+    }
+}   
