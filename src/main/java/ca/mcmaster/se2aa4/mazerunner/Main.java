@@ -107,14 +107,27 @@ public class Main {
         logger.info("use a -h flag to get this information.");
     }
 
+    //A method to dynamically select the algorithm type
+    //Right now there is only one so its just going to be hard-coded - but usually it would be a command line entry
+    public AlgorithmFactory selectFactory(String algorithm){
+        if(algorithm.equalsIgnoreCase("right-hand")){
+            return new RightHandAlgorithmFactory();
+        }
+        else{
+            throw new IllegalArgumentException("Algorithm Not Available");
+        }
+    }
+
     //method to start the game
     public void startGame(){
 
         //creates a new instance of the maze object and calls a function to create the maze
         Maze maze = new Maze();
         maze.createMaze(getFilePath());
-        //creating a new analyzer and a right hand algorithm object
-        Algorithms algorithms = new RightHand();
+
+        //creating the a rightHand object using the factory
+        //usually right-hand would be replaced by a command line entry, but since theres only one its hard coded.
+        AlgorithmFactory algorithmFactory = selectFactory("right-hand");
         Analyzer analyze = new Analyzer();
 
         logger.debug("Path before conversion: " + path);
@@ -137,8 +150,8 @@ public class Main {
             }
         }
         else{
-            algorithms.computePath(maze.getMaze(), maze.getEntry(), maze.getExit());
-            System.out.println(analyze.getComputedPath());
+            String computedPath = algorithmFactory.findPath(maze.getMaze(), maze.getEntry(), maze.getExit());
+            System.out.println(computedPath);
         }
 
         //end the program

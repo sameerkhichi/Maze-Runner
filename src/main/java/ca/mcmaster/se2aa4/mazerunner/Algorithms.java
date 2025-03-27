@@ -10,5 +10,5 @@ package ca.mcmaster.se2aa4.mazerunner;
 //to implement an algorithm make a class extend Analyzer implements Algorithms
 interface Algorithms {
     //all algorithms must have a method to compute a path
-    public void computePath(char[][] maze, int[] entry, int[] exit);
+    String computePath(char[][] maze, int[] entry, int[] exit);
 }

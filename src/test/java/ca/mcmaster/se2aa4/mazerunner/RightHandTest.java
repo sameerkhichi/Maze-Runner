@@ -30,8 +30,7 @@ public class RightHandTest {
         int[] entry = {3,0};
         int[] exit = {3,5};
 
-        rightHand.computePath(maze, entry, exit);
-        assertEquals("LFRFLFR2FR2FL2F", rightHand.getComputedPath(), "Should keep right hand on a wall and move forward till it finds an exit");
+        assertEquals("LFRFLFR2FR2FL2F", rightHand.computePath(maze, entry, exit), "Should keep right hand on a wall and move forward till it finds an exit");
 
 
     }
@@ -46,8 +45,7 @@ public class RightHandTest {
         int[] entry = {1, 0};
         int[] exit = {1, 3};
 
-        rightHand.computePath(maze, entry, exit);
-        assertEquals("3F", rightHand.getComputedPath(), "Should move straight to exit");
+        assertEquals("3F", rightHand.computePath(maze, entry, exit), "Should move straight to exit");
     }
 
     @Test
@@ -61,8 +59,7 @@ public class RightHandTest {
         int[] entry = {1,3};
         int[] exit = {1,3};
 
-        rightHand.computePath(maze, entry, exit);
-        assertEquals("", rightHand.getComputedPath(), "Should compute an empty path.");
+        assertEquals("", rightHand.computePath(maze, entry, exit), "Should compute an empty path.");
     }
 
     @Test
@@ -75,8 +72,7 @@ public class RightHandTest {
         int[] entry = {1, 1};
         int[] exit = {0, 2};
 
-        rightHand.computePath(maze, entry, exit);
-        assertEquals("Path computation failed", rightHand.getComputedPath(), "Should fail when no path exists");
+        assertEquals("Path Computation Failed", rightHand.computePath(maze, entry, exit), "Should fail when no path exists");
     }
 
     @Test
@@ -95,19 +91,16 @@ public class RightHandTest {
         int[] entry = {1, 0}; 
         int[] exit = {5, 5}; 
 
-        rightHand.computePath(testMaze, entry, exit);
-        
-        //Get the computed path
-        String computedPath = rightHand.getComputedPath();
+        Analyzer analyzer = new Analyzer();
         
         //The test passes if computedPath is not a failure message
-        assertNotEquals("Path computation failed", computedPath);
+        assertNotEquals("Path Computation Failed", rightHand.computePath(testMaze, entry, exit));
         
         //expands the path to check it
-        String expandedPath = rightHand.expandPath(computedPath);
+        String expandedPath = analyzer.expandPath(rightHand.computePath(testMaze, entry, exit));
         
         //validates the path that it generated
-        assertTrue(rightHand.validatePath(testMaze, entry, exit, expandedPath));
+        assertTrue(analyzer.validatePath(testMaze, entry, exit, expandedPath));
     }
 
 

@@ -10,7 +10,8 @@ package ca.mcmaster.se2aa4.mazerunner;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RightHand extends Analyzer implements Algorithms{
+public class RightHand implements Algorithms{
+
     private final Logger righthandLogger = LogManager.getLogger();
 
     //Helper method to check if the move made in the algorithm is valid
@@ -20,7 +21,7 @@ public class RightHand extends Analyzer implements Algorithms{
 
     //Function to compute a path through the maze using the right hand algorithm
     @Override
-    public void computePath(char[][] maze, int[] entry, int[] exit){
+    public String computePath(char[][] maze, int[] entry, int[] exit){
         righthandLogger.info("Computing path using Right Hand Algorithm");
         righthandLogger.debug("Entry: [" + entry[0] + "," + entry[1] + "]");
         righthandLogger.debug("Exit: [" + exit[0] + "," + exit[1] + "]");
@@ -115,16 +116,18 @@ public class RightHand extends Analyzer implements Algorithms{
 
         String finalPath = buildingPath.toString();
         righthandLogger.debug("Final uncompressed path: " + finalPath);
+
+        Analyzer analyzer = new Analyzer();
         
-        if (validatePath(maze, entry, exit, finalPath)){
+        if (analyzer.validatePath(maze, entry, exit, finalPath)){
             righthandLogger.info("Path validation successful");
             // Compress the path for output
-            setComputedPath(compressPath(finalPath));
+            return analyzer.compressPath(finalPath);
         } 
         else{
             righthandLogger.error("Path validation failed! Path doesn't lead to exit.");
             // Still set a path even if validation fails
-            setComputedPath("Path computation failed");
+            return ("Path Computation Failed");
         }
     }
 }
