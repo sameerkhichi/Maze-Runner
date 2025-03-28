@@ -4,29 +4,24 @@
  * 2AA4 - Assignment 3 - Maze Runner 
  */
 
-// Fixed RightHand class
 package ca.mcmaster.se2aa4.mazerunner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class RightHand implements Algorithms{
+public class RightHand extends PathComputationTemplate{
 
     private final Logger righthandLogger = LogManager.getLogger();
 
-    //Helper method to check if the move made in the algorithm is valid
-    private boolean moveChecker(char[][] maze, int row, int col) {
-        return row < maze.length && row >= 0 && col < maze[0].length && col >= 0 && maze[row][col] != '#';
-    }
+    //initialization not required - but it would go here if required
 
-    //Function to compute a path through the maze using the right hand algorithm
     @Override
-    public String computePath(char[][] maze, int[] entry, int[] exit){
+    protected boolean findPath(char[][] maze, int[] entry, int[] exit, StringBuilder path){
+        righthandLogger.info("Now computing path using Right Hand Algorithm");
+
         righthandLogger.info("Computing path using Right Hand Algorithm");
         righthandLogger.debug("Entry: [" + entry[0] + "," + entry[1] + "]");
         righthandLogger.debug("Exit: [" + exit[0] + "," + exit[1] + "]");
-
-        StringBuilder buildingPath = new StringBuilder();
 
         //Starting position
         int row = entry[0];
@@ -45,14 +40,14 @@ public class RightHand implements Algorithms{
         while ((row != exit[0] || col != exit[1]) && iterations < maxIterations){
             iterations++;
             righthandLogger.debug("Current position: [" + row + "," + col + "] facing: " + directionFacing);
-            righthandLogger.debug("Current path: " + buildingPath.toString());
+            righthandLogger.debug("Current path: " + path.toString());
 
             //Check if the exit is directly in front of us
             int nextRow = row + moves[directionFacing][0];
             int nextCol = col + moves[directionFacing][1];
             
             if (nextRow == exit[0] && nextCol == exit[1]){
-                buildingPath.append("F");
+                path.append("F");
                 righthandLogger.debug("Exit is directly ahead, moving forward");
                 break;
             }
@@ -63,21 +58,21 @@ public class RightHand implements Algorithms{
             int rightCol = col + moves[rightDirection][1];
 
             //Check if can turn right and move
-            if (moveChecker(maze, rightRow, rightCol)){
+            if (isValidMove(maze, rightRow, rightCol)){
                 //Turn right and move forward
                 directionFacing = rightDirection;
                 row = rightRow;
                 col = rightCol;
-                buildingPath.append("RF");
+                path.append("RF");
                 righthandLogger.debug("Turned right and moved to [" + row + "," + col + "]");
                 continue;
             }
 
             //If can't turn right, try moving forward
-            if (moveChecker(maze, nextRow, nextCol)){
+            if (isValidMove(maze, nextRow, nextCol)){
                 row = nextRow;
                 col = nextCol;
-                buildingPath.append("F");
+                path.append("F");
                 righthandLogger.debug("Moved forward to [" + row + "," + col + "]");
                 continue;
             }
@@ -87,11 +82,11 @@ public class RightHand implements Algorithms{
             int leftRow = row + moves[leftDirection][0];
             int leftCol = col + moves[leftDirection][1];
 
-            if (moveChecker(maze, leftRow, leftCol)){
+            if (isValidMove(maze, leftRow, leftCol)){
                 directionFacing = leftDirection;
                 row = leftRow;
                 col = leftCol;
-                buildingPath.append("LF");
+                path.append("LF");
                 righthandLogger.debug("Turned left and moved to [" + row + "," + col + "]");
                 continue;
             }
@@ -101,33 +96,19 @@ public class RightHand implements Algorithms{
             int backRow = row + moves[directionFacing][0];
             int backCol = col + moves[directionFacing][1];
             
-            if (moveChecker(maze, backRow, backCol)){
+            if (isValidMove(maze, backRow, backCol)){
                 row = backRow;
                 col = backCol;
-                buildingPath.append("RRF"); // Turn around (two rights) and move
+                path.append("RRF"); //Turn around (two rights) and move
                 righthandLogger.debug("Turned around and moved to [" + row + "," + col + "]");
             } 
             else{
-                // We're trapped! This shouldn't happen in a valid maze
+                //currently trapped which isnt possible in a valid maze
                 righthandLogger.error("Trapped in the maze at [" + row + "," + col + "]");
                 break;
             }
         }
 
-        String finalPath = buildingPath.toString();
-        righthandLogger.debug("Final uncompressed path: " + finalPath);
-
-        Analyzer analyzer = new Analyzer();
-        
-        if (analyzer.validatePath(maze, entry, exit, finalPath)){
-            righthandLogger.info("Path validation successful");
-            // Compress the path for output
-            return analyzer.compressPath(finalPath);
-        } 
-        else{
-            righthandLogger.error("Path validation failed! Path doesn't lead to exit.");
-            // Still set a path even if validation fails
-            return ("Path Computation Failed");
-        }
+        return validateFinalPath(maze, entry, exit, path.toString());
     }
 }

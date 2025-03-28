@@ -150,6 +150,14 @@ public class Main {
             }
         }
         else{
+            /*
+            PROGRAM FLOW
+             * This will call the findPath method in the algorithm factory
+             * which then creates an algorithm based on the chosen type here in main
+             * since its using RightHandAlgorithmFactory, createAlgorithm will be called in that class and return a RightHand object
+             * then algorithmFactory calls computePath and will use the RightHand objects implementation.
+             * Remember RightHand customizes the template computation method PathComputationTemplate, which implements the Algorithms interface.
+             */
             String computedPath = algorithmFactory.findPath(maze.getMaze(), maze.getEntry(), maze.getExit());
             System.out.println(computedPath);
         }
